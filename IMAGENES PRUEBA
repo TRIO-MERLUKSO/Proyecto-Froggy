@@ -1,0 +1,43 @@
+import pygame
+
+pygame.init()
+merluzo=pygame.image.load("merluzo.png")
+pantalla = pygame.display.set_mode((600, 400))
+pygame.display.set_caption("Mover con W")
+
+BLANCO = (255, 255, 255)
+ROJO = (200, 50, 50)
+
+# Posición inicial del jugador
+x = 300
+y = 200
+velocidad = 50
+
+running = True
+while running:
+    pygame.time.delay(30)  
+    pantalla.fill(BLANCO)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # --- Detectar teclas pulsadas ---
+    teclas = pygame.key.get_pressed()
+
+    if teclas[pygame.K_w]:
+        y -= velocidad  # mover arriba
+    if teclas[pygame.K_s]:
+        y += velocidad  # abajo
+    if teclas[pygame.K_a]:
+        x -= velocidad  # izquierda
+    if teclas[pygame.K_d]:
+        x += velocidad  # derecha
+        
+
+    # Dibujar el "jugador"
+    pantalla.blit(merluzo,(x,y))
+
+    pygame.display.update()
+
+pygame.quit()
