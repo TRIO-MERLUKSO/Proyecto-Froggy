@@ -1,1 +1,28 @@
 
+
+import pygame
+import math
+
+MORADO=(142, 68, 173)
+VERDE=(22, 163, 133)
+GRIS=(200,200, 200)
+
+################################################
+# Inicio de la ejecución
+################################################
+pygame.init()
+screen=pygame.display.set_mode([750, 750])
+pygame.display.set_caption("Croosy road")
+game_over=False
+
+while not game_over:    
+    for event in pygame.event.get():
+        if event.type==pygame.QUIT:               
+             game_over=True         
+        
+    screen.fill(GRIS)
+    
+    pygame.display.flip()
+    
+pygame.quit()    
+
