@@ -1,7 +1,32 @@
-
 import pygame
 import math
-
+def movimiento(jugador,velocidad):
+    teclas = pygame.key.get_pressed()
+    x=jugador.x
+    y=jugador.y
+    if teclas[pygame.K_w]:
+        y -= velocidad  # arriba
+    if teclas[pygame.K_s]:
+        y += velocidad  # abajo
+    if teclas[pygame.K_a]:
+        x -= velocidad  # izquierda
+    if teclas[pygame.K_d]:
+        x += velocidad  # derecha
+    if jugador.x<15:
+        x +=velocidad
+    if jugador.x>=735:
+        x -=velocidad
+    if jugador.y<=15:
+        y+=velocidad
+    if jugador.y>=735:
+        y-=velocidad
+    return x,y
+def choque_camion(x,y,xc,yc):
+    game_over=False
+    if xc>=x-15 and xc<=x+15 and yc==y:
+        print('Has muerto')
+        game_over=True
+    return game_over
 MORADO=(142, 68, 173)
 VERDE=(22, 163, 133)
 GRIS=(200,200, 200)
@@ -23,36 +48,17 @@ while not game_over:
              game_over=True         
     pygame.time.delay(100)         
     screen.fill(GRIS)
+    jugador.x,jugador.y=movimiento(jugador,velocidad)
     pygame.draw.rect(screen, MORADO, jugador)
     pygame.draw.rect(screen, VERDE,camion)
-    if camion.x>=jugador.x-15 and camion.x<=jugador.x+15 and camion.y==jugador.y:
-        print('Has muerto')
-        game_over=True
+    
     
     pygame.display.flip()
-    
-    teclas = pygame.key.get_pressed()
-    
-    if teclas[pygame.K_w]:
-        jugador.y -= velocidad  # mover arriba
-    if teclas[pygame.K_s]:
-        jugador.y += velocidad  # abajo
-    if teclas[pygame.K_a]:
-        jugador.x -= velocidad  # izquierda
-    if teclas[pygame.K_d]:
-        jugador.x += velocidad  # derecha
-    if jugador.x<15:
-        jugador.x +=velocidad
-    if jugador.x>=735:
-        jugador.x -=velocidad
-    if jugador.y<=15:
-        jugador.y+=velocidad
-    if jugador.y>=735:
-        jugador.y-=velocidad
-    camion.x +=5
+    game_over=choque_camion(jugador.x,jugador.y,camion.x,camion.y)
 
+    camion.x +=5
 
     # Dibujar el "jugador"
 
     pygame.display.update()
-pygame.quit()    
+pygame.quit()   
