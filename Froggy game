@@ -1,5 +1,4 @@
 import pygame
-import math
 def movimiento(jugador,velocidad):
     teclas = pygame.key.get_pressed()
     x=jugador.x
@@ -23,7 +22,7 @@ def movimiento(jugador,velocidad):
     return x,y
 def choque_camion(x,y,xc,yc):
     game_over=False
-    if xc>=x-15 and xc<=x+15 and yc==y:
+    if xc>=x-15 and xc<=x+15 and yc>=y-30 and yc<=y+30:
         print('Has muerto')
         game_over=True
     return game_over
@@ -45,8 +44,8 @@ camion = pygame.Rect(0,200,20,20)
 while not game_over:    
     for event in pygame.event.get():
         if event.type==pygame.QUIT:               
-             game_over=True         
-    pygame.time.delay(100)         
+             game_over=True
+    pygame.time.delay(100)
     screen.fill(GRIS)
     jugador.x,jugador.y=movimiento(jugador,velocidad)
     pygame.draw.rect(screen, MORADO, jugador)
@@ -61,4 +60,4 @@ while not game_over:
     # Dibujar el "jugador"
 
     pygame.display.update()
-pygame.quit()   
+pygame.quit()    
