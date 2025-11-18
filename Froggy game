@@ -8,6 +8,8 @@ velocidad=20
 ################################################
 # Inicio de la ejecución
 ################################################
+
+
 pygame.init()
 screen=pygame.display.set_mode([750, 750])
 pygame.display.set_caption("Croosy road")
