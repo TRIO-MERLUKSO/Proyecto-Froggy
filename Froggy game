@@ -1,3 +1,4 @@
+
 import pygame
 import math
 
@@ -8,8 +9,6 @@ velocidad=20
 ################################################
 # Inicio de la ejecución
 ################################################
-
-
 pygame.init()
 screen=pygame.display.set_mode([750, 750])
 pygame.display.set_caption("Croosy road")
@@ -17,14 +16,21 @@ game_over=False
 
 
 jugador = pygame.Rect(20, 20, 30, 30)
+camion = pygame.Rect(0,200,20,20)
 while not game_over:    
     for event in pygame.event.get():
         if event.type==pygame.QUIT:               
              game_over=True         
-    pygame.time.delay(50)         
+    pygame.time.delay(100)         
     screen.fill(GRIS)
     pygame.draw.rect(screen, MORADO, jugador)
+    pygame.draw.rect(screen, VERDE,camion)
+    if camion.x>=jugador.x-15 and camion.x<=jugador.x+15 and camion.y==jugador.y:
+        print('Has muerto')
+        game_over=True
+    
     pygame.display.flip()
+    
     teclas = pygame.key.get_pressed()
     
     if teclas[pygame.K_w]:
@@ -43,6 +49,7 @@ while not game_over:
         jugador.y+=velocidad
     if jugador.y>=735:
         jugador.y-=velocidad
+    camion.x +=5
 
 
     # Dibujar el "jugador"
