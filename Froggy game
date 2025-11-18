@@ -1,28 +1,43 @@
-
-
 import pygame
-import math
 
-MORADO=(142, 68, 173)
-VERDE=(22, 163, 133)
-GRIS=(200,200, 200)
-
-################################################
-# Inicio de la ejecución
-################################################
 pygame.init()
-screen=pygame.display.set_mode([750, 750])
-pygame.display.set_caption("Croosy road")
-game_over=False
 
-while not game_over:    
+pantalla = pygame.display.set_mode((600, 400))
+pygame.display.set_caption("Mover con W")
+
+BLANCO = (255, 255, 255)
+ROJO = (200, 50, 50)
+
+# Posición inicial del jugador
+x = 300
+y = 200
+velocidad = 50
+
+running = True
+while running:
+    pygame.time.delay(30)  
+    pantalla.fill(BLANCO)
+
     for event in pygame.event.get():
-        if event.type==pygame.QUIT:               
-             game_over=True         
-        
-    screen.fill(GRIS)
-    
-    pygame.display.flip()
-    
-pygame.quit()    
+        if event.type == pygame.QUIT:
+            running = False
+
+    # --- Detectar teclas pulsadas ---
+    teclas = pygame.key.get_pressed()
+
+    if teclas[pygame.K_w]:
+        y -= velocidad  # mover arriba
+    if teclas[pygame.K_s]:
+        y += velocidad  # abajo
+    if teclas[pygame.K_a]:
+        x -= velocidad  # izquierda
+    if teclas[pygame.K_d]:
+        x += velocidad  # derecha
+
+    # Dibujar el "jugador"
+    pygame.draw.rect(pantalla, ROJO, (x, y, 40, 40))
+
+    pygame.display.update()
+
+pygame.quit()
 
