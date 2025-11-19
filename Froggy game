@@ -1,26 +1,27 @@
 import pygame
+#No utilizamos esta funcion en ningun momento
 def pantalla():
     screen=pygame.display.set_mode([750, 750])
     return screen
 
-def jugador_speed(screen,MORADO):
+def jugador_speed():
     jugador = pygame.Rect(20, 20, 30, 30)
-    pygame.draw.rect(screen, MORADO, jugador)
     velocidad=20
     return jugador,velocidad
 
-
-def colores():
-    MORADO=(142, 68, 173)
-    VERDE=(22, 163, 133)
-    GRIS=(200,200, 200)
-    AZUL=(0,0,255)
-    ROJO=(255,0,0)
-    NARANJA=(255,128,0)
-    NEGRO=(0,0,0)
-    AMARILLO=(255,255,0)
-    
-    return MORADO,VERDE,GRIS
+#Lo he metido todo en un diccionario para que sea mas comodo
+def color():
+    colores = {
+    "MORADO":   (142, 68, 173),
+    "VERDE":    (22, 163, 133),
+    "GRIS":     (200, 200, 200),
+    "AZUL":     (0, 0, 255),
+    "ROJO":     (255, 0, 0),
+    "NARANJA":  (255, 128, 0),
+    "NEGRO":    (0, 0, 0),
+    "AMARILLO": (255, 255, 0)
+    }
+    return colores
 
 def movimiento(jugador,velocidad):
     teclas = pygame.key.get_pressed()
@@ -43,14 +44,11 @@ def movimiento(jugador,velocidad):
     if jugador.y>=735:
         y-=velocidad
     return x,y
-
-def camion(screen,VERDE):
+#He quitado que se dibuje el camion en la funcion
+#ya que ya se hace en el juego
+def camion():
     camion = pygame.Rect(0,200,20,20)
-    pygame.draw.rect(screen, VERDE,camion)
-    xc=camion.x
-    yc=camion.y
-    
-    return camion,xc,yc
+    return camion
 
 def choque_camion(x,y,xc,yc):
     game_over=False
@@ -61,55 +59,52 @@ def choque_camion(x,y,xc,yc):
 
 
 
-def juego(camion, jugador, GRIS, MORADO, VERDE, velocidad):
+def juego():
     pygame.init()
-    screen = pygame.display.set_mode([750, 750])
+    screen = pantalla()
     pygame.display.set_caption("Crossy Road")
     clock = pygame.time.Clock()
     game_over = False
     
+    ###Valores clave de nuestro juego###
+    c=color()
+    jugador, velocidad = jugador_speed()
+    camion1=camion()
+    ####################################
+    
     while not game_over:
-        clock.tick(30)
+        pygame.time.delay(150)  
+        
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
 
         # Movimiento jugador
-        x, y = movimiento(jugador, velocidad)
-        jugador.x = x
-        jugador.y = y
+        jugador.x, jugador.y = movimiento(jugador, velocidad)
+        camion1.x += 15
+        if camion1.x > 750:
+            camion1.x = 0  #CHAVALES AQUÍ LO QUE HE HECHO ES COMO QUE EL CAMIÓN RESPAWNEE
 
         
-        camion.x += 5
-        if camion.x > 750:
-            camion.x = 0  #CHAVALES AQUÍ LO QUE HE HECHO ES COMO QUE EL CAMIÓN RESPAWNEE
-
-        
-        if choque_camion(jugador.x, jugador.y, camion.x, camion.y):
+        if choque_camion(jugador.x, jugador.y, camion1.x, camion1.y):
             game_over = True
 
         
-        screen.fill(GRIS)
-        pygame.draw.rect(screen, MORADO, jugador)
-        pygame.draw.rect(screen, VERDE, camion)
+        screen.fill(c["GRIS"])
+        pygame.draw.rect(screen, c["MORADO"], jugador)
+        pygame.draw.rect(screen, c["VERDE"], camion1)
 
         pygame.display.update()
 
     pygame.quit()
 
 
-
 def main():
-    screen = pantalla()
-    MORADO, VERDE, GRIS = colores()
-    jugador, velocidad = jugador_speed(screen, MORADO)
-    camion1, EROME, PAN = camion(screen, VERDE)
-
-    juego(camion, jugador, GRIS, MORADO, VERDE, velocidad)
-
-
+    juego()
 
 main()
 
-    
+
+
+
