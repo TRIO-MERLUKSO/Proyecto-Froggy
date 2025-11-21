@@ -140,16 +140,14 @@ def juego():
     pygame.quit()
 
 def main():
+    pygame.mixer.init()
+    cancionmenu = pygame.mixer.Sound('torremolinos.wav')
+    cancionmenu.play(-1)
+    
+    
     op=menu()
     if op==0:
         juego()
     
         
 main()
-
-
-
-
-
-
-
