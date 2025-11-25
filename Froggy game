@@ -1,7 +1,7 @@
 import pygame
 
 def pantalla():
-    screen = pygame.display.set_mode([1000, 1000])
+    screen = pygame.display.set_mode([800, 800])
     return screen
 
 def jugador_speed():
@@ -92,12 +92,12 @@ def movimiento(jugador, velocidad):
 
     if x < 15:
         x = 15
-    if x > 955:
-        x = 955
+    if x > 755:
+        x = 755
     if y < 15:
         y = 15
-    if y > 955:
-        y = 955
+    if y > 755:
+        y = 755
 
     return x, y
 
@@ -139,10 +139,10 @@ def movimiento_entidades(e):
     e["rect"].x+=e["vel"]
     #Para que se reinicie en los bordes
     #borde derecho
-    if 1000<e["rect"].x and e["vel"]>0:
+    if 800<e["rect"].x and e["vel"]>0:
         e["rect"].x=-(e["rect"].width)
     if e["rect"].x<-e["rect"].width and e["vel"]<0:
-        e["rect"].x=1000
+        e["rect"].x=800
 
 
 def juego():
