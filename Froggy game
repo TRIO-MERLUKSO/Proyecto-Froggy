@@ -76,11 +76,13 @@ def menu():
     pygame.quit()
     return opcion_actual
 
-def movimiento(jugador, velocidad):
+def movimiento(jugador, velocidad,xarboles,yarboles):
     teclas = pygame.key.get_pressed()
     x = jugador.x
     y = jugador.y
-
+    viejox=jugador.x
+    viejoy=jugador.y
+    
     if teclas[pygame.K_w] or teclas[pygame.K_UP]:
         y -= velocidad
     if teclas[pygame.K_s] or teclas[pygame.K_DOWN]:
@@ -99,7 +101,7 @@ def movimiento(jugador, velocidad):
     if y > 755:
         y = 755
 
-    return x, y
+    return x,y,viejox,viejoy
 
 
 def crear_camion(x,y,direc,c):
@@ -156,7 +158,8 @@ def juego():
     entidades.append(crear_camion(300,300,-1,c))
     entidades.append(crear_tren(300,500,1,c))
     entidades.append(crear_arbol(200,400,c))
-    
+    xarboles=[200]
+    yarboles=[400]
     while not game_over:
         pygame.time.delay(150)
 
@@ -164,12 +167,15 @@ def juego():
             if event.type == pygame.QUIT:
                 game_over = True
         screen.fill(c["GRIS"])
-        jugador.x, jugador.y = movimiento(jugador, velocidad)
+        jugador.x, jugador.y,viejox,viejoy = movimiento(jugador, velocidad,xarboles,yarboles)
         
         for e in entidades:
             movimiento_entidades(e)
             if colision(jugador,e):
-                game_over=True
+                if e['tipo']=='camion' or e['tipo']=='tren':
+                    game_over=True
+                elif e['tipo']=='arbol':
+                    jugador.x,jugador.y=viejox,viejoy
             dibujar_entidades(screen,e)
             
         pygame.draw.rect(screen, c["MORADO"],jugador)
