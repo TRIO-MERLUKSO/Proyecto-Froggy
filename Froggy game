@@ -106,7 +106,7 @@ def crear_camion(x,y,direc,c):
     return {"tipo": "camion",
             "rect":pygame.Rect(x,y,50,30),
             "vel":20*direc,
-            "color":c["VERDE"]
+            "color":c["NARANJA"]
             }
 
 def crear_tren(x,y,direc,c):
@@ -115,6 +115,15 @@ def crear_tren(x,y,direc,c):
             "vel":60*direc,
             "color":c["ROJO"]
             }
+
+def crear_arbol(x,y,c):
+    return {"tipo": "arbol",
+            "rect":pygame.Rect(x,y,30,60),
+            "vel":0,
+            "color":c["VERDE"]
+            }
+
+
 def dibujar_entidades(screen,e):
     pygame.draw.rect(screen, e["color"],e["rect"])
     
@@ -146,6 +155,7 @@ def juego():
     jugador, velocidad = jugador_speed()
     entidades.append(crear_camion(300,300,-1,c))
     entidades.append(crear_tren(300,500,1,c))
+    entidades.append(crear_arbol(200,400,c))
     
     while not game_over:
         pygame.time.delay(150)
@@ -155,6 +165,7 @@ def juego():
                 game_over = True
         screen.fill(c["GRIS"])
         jugador.x, jugador.y = movimiento(jugador, velocidad)
+        
         for e in entidades:
             movimiento_entidades(e)
             if colision(jugador,e):
