@@ -120,7 +120,7 @@ def crear_tren(x,y,direc,c):
 
 def crear_arbol(x,y,c):
     return {"tipo": "arbol",
-            "rect":pygame.Rect(x,y,30,60),
+            "rect":pygame.Rect(x,y,30,50),
             "vel":0,
             "color":c["VERDE"]
             }
