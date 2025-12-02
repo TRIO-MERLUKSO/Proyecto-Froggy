@@ -147,56 +147,70 @@ def movimiento(jugador, velocidad):
     return x,y,viejox,viejoy
 
 
+# ==== CREADORES CON IMÁGENES (hitbox igual que antes) ====
 
-def crear_camion(x,y,direc,c):
-    return {"tipo": "camion",
-            "rect":pygame.Rect(x,y,50,30),
-            "vel":20*direc,
-            "color":c["NARANJA"]
-            }
+def crear_camion(x,y,direc, img):
+    rect = img.get_rect(topleft=(x,y))   # tamaño 50x30
+    return {
+        "tipo": "camion",
+        "rect": rect,
+        "vel": 20*direc,
+        "img": img
+    }
 
-def crear_tren(x,y,direc,c):
-    return {"tipo": "tren",
-            "rect":pygame.Rect(x,y,100,30),
-            "vel":60*direc,
-            "color":c["ROJO"]
-            }
+def crear_tren(x,y,direc, img):
+    rect = img.get_rect(topleft=(x,y))   # tamaño 100x30
+    return {
+        "tipo": "tren",
+        "rect": rect,
+        "vel": 60*direc,
+        "img": img
+    }
 
-def crear_arbol(x,y,c):
-    return {"tipo": "arbol",
-            "rect":pygame.Rect(x,y,30,60),
-            "vel":0,
-            "color":c["VERDE"]
-            }
+def crear_arbol(x,y, img):
+    rect = img.get_rect(topleft=(x,y))   # tamaño 30x60
+    return {
+        "tipo": "arbol",
+        "rect": rect,
+        "vel": 0,
+        "img": img
+    }
 
-def crear_tronco(x,y,direc,c):
-    return {"tipo": "tronco",
-            "rect":pygame.Rect(x,y,80,30),
-            "vel":20*direc,
-            "color":c["AZUL"]
-            }
+def crear_tronco(x,y,direc, img):
+    rect = img.get_rect(topleft=(x,y))   # tamaño 80x30
+    return {
+        "tipo": "tronco",
+        "rect": rect,
+        "vel": 20*direc,
+        "img": img
+    }
 
 def crear_agua(tronco,c):
-    return {"tipo":"agua",
-            "rect":pygame.Rect(0,tronco["rect"].y,800,30),
-            "vel":0
-            ,"color":c["AZUL"]
-            }
+    return {
+        "tipo":"agua",
+        "rect":pygame.Rect(0, tronco["rect"].y, 800, 30),
+        "vel":0,
+        "color":c["AZUL"]
+    }
 
-def crear_bandera(x,y,c):
-    return {"tipo": "bandera",
-            "rect":pygame.Rect(x,y,30,40),
-            "vel":0,
-            "color":c["AMARILLO"]
-            }
+def crear_bandera(x,y, img):
+    rect = img.get_rect(topleft=(x,y))   # tamaño 30x40
+    return {
+        "tipo": "bandera",
+        "rect": rect,
+        "vel": 0,
+        "img": img
+    }
 
 def dibujar_entidades(screen,e):
-    pygame.draw.rect(screen, e["color"],e["rect"])
+    # Si la entidad tiene imagen, la dibujamos; si no, usamos color y rectángulo
+    if "img" in e:
+        screen.blit(e["img"], e["rect"])
+    else:
+        pygame.draw.rect(screen, e["color"], e["rect"])
     
 def colision(jugador,e):
-    a=jugador
-    b=e["rect"]
-    if a.x<b.x+b.width and a.y<b.y+b.height and a.x+a.width>b.x and a.y+a.height>b.y:
+    if jugador.colliderect(e["rect"]):
         return True
     else:
         return False
@@ -211,7 +225,6 @@ def movimiento_entidades(e):
         e["rect"].x=800
         
 
-
 def juego():
     pygame.init()
     screen = pantalla()
@@ -219,13 +232,26 @@ def juego():
     game_over = False
     entidades=[]
     c = color()
+
+    # ==== CARGA Y ESCALADO DE IMÁGENES (mismas medidas que los rects antiguos) ====
+    # ==== CARGA Y ESCALADO DE IMÁGENES (nuevas medidas mejoradas) ====
+    camion_img  = pygame.transform.scale(pygame.image.load("camion.png"), (120, 70))
+    tren_img    = pygame.transform.scale(pygame.image.load("tren.png"),   (200, 60))
+    tronco_img  = pygame.transform.scale(pygame.image.load("tronco.png"), (160, 55))
+    arbol_img   = pygame.transform.scale(pygame.image.load("arbol.png"),  (60, 110))
+    bandera_img = pygame.transform.scale(pygame.image.load("bandera.png"),(50, 70))
+
+
     jugador, velocidad = jugador_speed()
-    entidades.append(crear_camion(300,300,-1,c))
-    entidades.append(crear_tren(300,500,1,c))
-    entidades.append(crear_arbol(200,400,c))
-    entidades.append(crear_tronco(0,100,1,c))
-    entidades.append(crear_tronco(20,130,-1,c))
-    entidades.append(crear_bandera(400,750,c))
+
+    # ENTIDADES (igual que antes pero con imágenes)
+    entidades.append(crear_camion(300,300,-1, camion_img))
+    entidades.append(crear_tren(300,500,-1, tren_img))
+    entidades.append(crear_arbol(200,400, arbol_img))
+    entidades.append(crear_tronco(0,100,1, tronco_img))
+    entidades.append(crear_tronco(20,130,-1, tronco_img))
+    entidades.append(crear_bandera(400,700, bandera_img))
+
     seguir=True
     
     while not game_over:
@@ -281,4 +307,5 @@ def main():
             seguir=False
         
 main()
+
 
