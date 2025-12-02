@@ -5,8 +5,8 @@ def pantalla():
     return screen
 
 def jugador_speed():
-    jugador = pygame.Rect(20, 20, 30, 30)
-    velocidad = 20
+    jugador = pygame.Rect(20, 20, 40, 40)
+    velocidad = 40
     return jugador, velocidad
 
 def color():
@@ -84,6 +84,47 @@ def menu():
     return opcion_actual
 
 
+def creds():
+    pygame.init()
+    screen = pantalla()
+    pygame.display.set_caption("Crossy Road")
+    seguir = True
+    c = color()
+    fuente = pygame.font.SysFont(None, 40)
+    
+    fuente_titulo = pygame.font.SysFont(None, 91)
+    fuente_texto = pygame.font.SysFont(None, 46)
+
+    while seguir:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                seguir = False
+
+        tecla = pygame.key.get_pressed()
+
+        # Limpiar pantalla
+        screen.fill(c["NEGRO"])
+
+        etiqueta1 = fuente_titulo.render('JUEGO CREADO POR', True, c["BLANCO"])
+        x1 = (800 - etiqueta1.get_width()) // 2
+        screen.blit(etiqueta1, (x1, 150))
+
+        etiqueta2 = fuente_texto.render("Alejandro García Plo", True, c["ROJO"])
+        x2 = (800 - etiqueta2.get_width()) // 2
+        screen.blit(etiqueta2, (x2, 400))
+
+        etiqueta3 = fuente_texto.render("Samuel Ferrández Sánchez", True, c["ROJO"])
+        x3 = (800 - etiqueta3.get_width()) // 2
+        screen.blit(etiqueta3, (x3, 500))
+        
+        etiqueta4 = fuente_texto.render("Lorenzo Villalobos Pizarro", True, c["ROJO"])
+        x4 = (800 - etiqueta4.get_width()) // 2
+        screen.blit(etiqueta4, (x4, 600))
+
+        if tecla[pygame.K_RETURN]:
+            seguir = False
+
+        pygame.display.update()
 def vict_der(screen,texto):
     seguir = True
     c = color()
@@ -117,7 +158,9 @@ def vict_der(screen,texto):
             seguir = False
 
         pygame.display.update()
-
+def temporizador(tiempo):
+    tiempo=tiempo+0.150
+    return tiempo
     
 def movimiento(jugador, velocidad):
     teclas = pygame.key.get_pressed()
@@ -235,7 +278,7 @@ def juego():
 
     # ==== CARGA Y ESCALADO DE IMÁGENES (mismas medidas que los rects antiguos) ====
     # ==== CARGA Y ESCALADO DE IMÁGENES (nuevas medidas mejoradas) ====
-    camion_img  = pygame.transform.scale(pygame.image.load("camion.png"), (120, 70))
+    camion_img  = pygame.transform.scale(pygame.image.load("camion.png"), (70, 70))
     tren_img    = pygame.transform.scale(pygame.image.load("tren.png"),   (200, 60))
     tronco_img  = pygame.transform.scale(pygame.image.load("tronco.png"), (160, 55))
     arbol_img   = pygame.transform.scale(pygame.image.load("arbol.png"),  (60, 110))
@@ -251,12 +294,14 @@ def juego():
     entidades.append(crear_tronco(0,100,1, tronco_img))
     entidades.append(crear_tronco(20,130,-1, tronco_img))
     entidades.append(crear_bandera(400,700, bandera_img))
-
+    fuente_titulo = pygame.font.SysFont(None, 50)
     seguir=True
-    
+    tiempo=0
     while not game_over:
         pygame.time.delay(150)
-
+        tiempo=temporizador(tiempo)
+        
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
@@ -291,21 +336,29 @@ def juego():
                 dibujar_entidades(screen,e)
         if not game_over:
             pygame.draw.rect(screen, c["MORADO"],jugador)
-        
+        etiquetat = fuente_titulo.render(str(round(tiempo,1)), True, c["NEGRO"])
+        screen.blit(etiquetat, (730, 30))
         pygame.display.update()
 
     pygame.quit()
-    return seguir    
+    return seguir,tiempo    
 
 def main():
     seguir=True
+    tiempos=[]
     while seguir:
         op=menu()
         if op==0:
-            seguir=juego()
+            seguir,t=juego()
+            tiempos.append(t)
+        elif op==1:
+            estadisticas(tiempos)
+        
+        elif op==2:
+            creds()
+        
         elif op==3:
             seguir=False
         
 main()
-
 
