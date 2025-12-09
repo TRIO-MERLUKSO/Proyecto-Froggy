@@ -1,0 +1,40 @@
+def menu():
+    pygame.init()   
+    screen = pantalla()
+    fondo = pygame.transform.scale(pygame.image.load("fondo.png"), (800, 800))
+    screen.blit(fondo, (0, 0))
+    pygame.display.set_caption("Crossy Road")
+    seguir = True
+    opcion_actual = 0
+    c = color()
+    fuente = pygame.font.SysFont(None, 40)
+
+    enter_presionado = False   # <<--- CONTROL DE ESTADO
+
+    while seguir:
+        pygame.time.delay(100)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                seguir = False
+                opcion_actual=3
+
+        tecla = pygame.key.get_pressed()
+        opcion_actual = opcion(tecla, opcion_actual)
+
+        # Detectar ENTER solo cuando se pulsa por PRIMERA vez
+        if tecla[pygame.K_RETURN] and not enter_presionado:
+            seguir = False
+
+        # Actualizar estado del ENTER
+        enter_presionado = tecla[pygame.K_RETURN]
+
+        boton(screen, fuente, c, "JUGAR",    168, 447, 470, 75, opcion_actual == 0)
+        boton(screen, fuente, c, "ESTADISTICAS", 168, 525, 470, 75, opcion_actual == 1)
+        boton(screen, fuente, c, "CRÉDITOS", 168, 607, 470, 75, opcion_actual == 2)
+        boton(screen, fuente, c, "SALIR",    168, 690, 470, 75, opcion_actual == 3)
+
+        pygame.display.update()
+    
+    pygame.quit()
+    return opcion_actual
