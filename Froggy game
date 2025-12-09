@@ -15,8 +15,8 @@ def pantalla():
     return screen
 
 def jugador_speed():
-    jugador = pygame.Rect(400, 0, 46, 46)
-    velocidad = 48
+    jugador = pygame.Rect(400, 0, 40, 40)
+    velocidad = 40
     return jugador, velocidad
 
 def color():
@@ -297,7 +297,7 @@ def juego(muertes):
     entidades.append(crear_arbol(190,235, arbol_img))
     entidades.append(crear_arbol(478,235, arbol_img))
     entidades.append(crear_tronco(0,400,1, tronco_img))
-    entidades.append(crear_tronco(20,455,-1, tronco_img))
+    entidades.append(crear_tronco(20,450,-1, tronco_img))
     entidades.append(crear_tronco(200,500,1, tronco_img))
     entidades.append(crear_bandera(400,700, bandera_img))
     entidades.append(crear_camion(10,570,-1,random.choice(coches)))
@@ -307,7 +307,9 @@ def juego(muertes):
     entidades.append(crear_camion(300,630,1,random.choice(coches)))
     entidades.append(crear_camion(100,630,1,random.choice(coches)))
 
-    fuente_titulo = pygame.font.SysFont(None, 50)
+    fuente_titulo = pygame.font.SysFont(None, 60)
+    fuente_Titulo = pygame.font.SysFont('Alef Fett', 60)
+    
     seguir = True
     tiempo = 0
 
@@ -358,10 +360,10 @@ def juego(muertes):
         
         if not game_over:
             pygame.draw.rect(screen, c["MORADO"], jugador)
-            etiquetat = fuente_titulo.render(str(round(tiempo, 1)), True, c["BLANCO"])
-            screen.blit(etiquetat, (730, 30))
-            etiquetat = fuente_titulo.render('Muertes: '+str(muertes), True, c["BLANCO"])
-            screen.blit(etiquetat, (10, 30))
+            etiquetat = fuente_Titulo.render(str(round(tiempo, 1)), True, c["BLANCO"])
+            screen.blit(etiquetat, (715, 30))
+            etiquetat = fuente_Titulo.render('Muertes: '+str(muertes), True, c["BLANCO"])
+            screen.blit(etiquetat, (15, 30))
 
         pygame.display.update()
 
