@@ -1,12 +1,22 @@
+import os
+os.environ['SDL_VIDEO_WINDOW_POS'] = "100,100"
+os.environ['SDL_VIDEO_CENTERED'] = "0"
+os.environ['SDL_VIDEO_ALLOW_SCREENSAVER'] = "1"
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
+os.environ["SDL_VIDEO_HIGDPI"] = "0"
+import ctypes
+ctypes.windll.user32.SetProcessDPIAware()
+
 import pygame
+import random
 
 def pantalla():
     screen = pygame.display.set_mode([800, 800])
     return screen
 
 def jugador_speed():
-    jugador = pygame.Rect(20, 20, 30, 30)
-    velocidad = 20
+    jugador = pygame.Rect(400, 0, 46, 46)
+    velocidad = 48
     return jugador, velocidad
 
 def color():
@@ -53,30 +63,116 @@ def menu():
     c = color()
     fuente = pygame.font.SysFont(None, 40)
 
+    enter_presionado = False   # <<--- CONTROL DE ESTADO
+
     while seguir:
         pygame.time.delay(100)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 seguir = False
+                opcion_actual=3
 
         tecla = pygame.key.get_pressed()
         opcion_actual = opcion(tecla, opcion_actual)
 
-        
+        # Detectar ENTER solo cuando se pulsa por PRIMERA vez
+        if tecla[pygame.K_RETURN] and not enter_presionado:
+            seguir = False
+
+        # Actualizar estado del ENTER
+        enter_presionado = tecla[pygame.K_RETURN]
+
         boton(screen, fuente, c, "JUGAR",    300, 150, 240, 60, opcion_actual == 0)
         boton(screen, fuente, c, "ESTADISTICAS", 300, 250, 240, 60, opcion_actual == 1)
         boton(screen, fuente, c, "CRÉDITOS", 300, 350, 240, 60, opcion_actual == 2)
         boton(screen, fuente, c, "SALIR",    300, 450, 240, 60, opcion_actual == 3)
-        if tecla[pygame.K_RETURN]:
-            seguir=False
 
         pygame.display.update()
     
     pygame.quit()
     return opcion_actual
 
-def movimiento(jugador, velocidad,xarboles,yarboles):
+
+def creds():
+    pygame.init()
+    screen = pantalla()
+    pygame.display.set_caption("Crossy Road")
+    seguir = True
+    c = color()
+    fuente = pygame.font.SysFont(None, 40)
+    
+    fuente_titulo = pygame.font.SysFont(None, 91)
+    fuente_texto = pygame.font.SysFont(None, 46)
+
+    while seguir:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                seguir = False
+
+        tecla = pygame.key.get_pressed()
+
+        # Limpiar pantalla
+        screen.fill(c["NEGRO"])
+
+        etiqueta1 = fuente_titulo.render('JUEGO CREADO POR', True, c["BLANCO"])
+        x1 = (800 - etiqueta1.get_width()) // 2
+        screen.blit(etiqueta1, (x1, 150))
+
+        etiqueta2 = fuente_texto.render("Alejandro García Plo", True, c["ROJO"])
+        x2 = (800 - etiqueta2.get_width()) // 2
+        screen.blit(etiqueta2, (x2, 400))
+
+        etiqueta3 = fuente_texto.render("Samuel Ferrández Sánchez", True, c["ROJO"])
+        x3 = (800 - etiqueta3.get_width()) // 2
+        screen.blit(etiqueta3, (x3, 500))
+        
+        etiqueta4 = fuente_texto.render("Lorenzo Villalobos Pizarro", True, c["ROJO"])
+        x4 = (800 - etiqueta4.get_width()) // 2
+        screen.blit(etiqueta4, (x4, 600))
+
+        if tecla[pygame.K_RETURN]:
+            seguir = False
+
+        pygame.display.update()
+def vict_der(screen,texto):
+    seguir = True
+    c = color()
+    
+    fuente_titulo = pygame.font.SysFont(None, 120)
+    fuente_texto = pygame.font.SysFont(None, 60)
+
+    while seguir:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                seguir = False
+
+        tecla = pygame.key.get_pressed()
+
+        # Limpiar pantalla
+        screen.fill(c["NEGRO"])
+
+        etiqueta1 = fuente_titulo.render(texto, True, c["BLANCO"])
+        x1 = (800 - etiqueta1.get_width()) // 2
+        screen.blit(etiqueta1, (x1, 200))
+
+        etiqueta2 = fuente_texto.render("Pulsa ENTER", True, c["BLANCO"])
+        x2 = (800 - etiqueta2.get_width()) // 2
+        screen.blit(etiqueta2, (x2, 380))
+
+        etiqueta3 = fuente_texto.render("para continuar", True, c["BLANCO"])
+        x3 = (800 - etiqueta3.get_width()) // 2
+        screen.blit(etiqueta3, (x3, 450))
+
+        if tecla[pygame.K_RETURN]:
+            seguir = False
+
+        pygame.display.update()
+def temporizador(tiempo):
+    tiempo=tiempo+0.150
+    return tiempo
+    
+def movimiento(jugador, velocidad):
     teclas = pygame.key.get_pressed()
     x = jugador.x
     y = jugador.y
@@ -104,35 +200,61 @@ def movimiento(jugador, velocidad,xarboles,yarboles):
     return x,y,viejox,viejoy
 
 
-def crear_camion(x,y,direc,c):
-    return {"tipo": "camion",
-            "rect":pygame.Rect(x,y,50,30),
-            "vel":20*direc,
-            "color":c["NARANJA"]
-            }
+# ==== CREADORES CON IMÁGENES (hitbox igual que antes) ====
 
-def crear_tren(x,y,direc,c):
-    return {"tipo": "tren",
-            "rect":pygame.Rect(x,y,100,30),
-            "vel":60*direc,
-            "color":c["ROJO"]
-            }
+def crear_camion(x,y,direc, img):
+    rect = img.get_rect(topleft=(x,y))   # tamaño 50x30
+    return {
+        "tipo": "camion",
+        "rect": rect,
+        "vel": 20*direc,
+        "img": img
+    }
 
-def crear_arbol(x,y,c):
-    return {"tipo": "arbol",
-            "rect":pygame.Rect(x,y,30,50),
-            "vel":0,
-            "color":c["VERDE"]
-            }
+def crear_tren(x,y,direc, img):
+    rect = img.get_rect(topleft=(x,y))   # tamaño 100x30
+    return {
+        "tipo": "tren",
+        "rect": rect,
+        "vel": 50*direc,
+        "img": img
+    }
 
+def crear_arbol(x,y, img):
+    rect = img.get_rect(topleft=(x,y))   # tamaño 30x60
+    return {
+        "tipo": "arbol",
+        "rect": rect,
+        "vel": 0,
+        "img": img
+    }
+
+def crear_tronco(x,y,direc, img):
+    rect = img.get_rect(topleft=(x,y))   # tamaño 80x30
+    return {
+        "tipo": "tronco",
+        "rect": rect,
+        "vel": 20*direc,
+        "img": img
+    }
+
+
+
+def crear_bandera(x,y, img):
+    rect = img.get_rect(topleft=(x,y))   # tamaño 30x40
+    return {
+        "tipo": "bandera",
+        "rect": rect,
+        "vel": 0,
+        "img": img
+    }
 
 def dibujar_entidades(screen,e):
-    pygame.draw.rect(screen, e["color"],e["rect"])
+        screen.blit(e["img"], e["rect"])
+
     
 def colision(jugador,e):
-    a=jugador
-    b=e["rect"]
-    if a.x<b.x+b.width and a.y<b.y+b.height and a.x+a.width>b.x and a.y+a.height>b.y:
+    if jugador.colliderect(e["rect"]):
         return True
     else:
         return False
@@ -145,47 +267,132 @@ def movimiento_entidades(e):
         e["rect"].x=-(e["rect"].width)
     if e["rect"].x<-e["rect"].width and e["vel"]<0:
         e["rect"].x=800
+        
 
-
-def juego():
+def juego(muertes):
     pygame.init()
     screen = pantalla()
     pygame.display.set_caption("Crossy Road")
     game_over = False
-    entidades=[]
+    entidades = []
     c = color()
+    coches=[]
+
+    # ==== CARGA Y ESCALADO DE IMÁGENES (nuevas medidas mejoradas) ====
+    mapa_img = pygame.transform.scale(pygame.image.load("MAPA.png"), (800, 800))
+    coches.append(pygame.transform.scale(pygame.image.load("coche 1.png"), (70, 70)))
+    coches.append(pygame.transform.scale(pygame.image.load("coche 2.png"), (70, 70)))
+    tren_img    = pygame.transform.scale(pygame.image.load("tren.png"),   (200, 70))
+    tronco_img  = pygame.transform.scale(pygame.image.load("tronco.png"), (160, 45))
+    arbol_img   = pygame.transform.scale(pygame.image.load("arbol.png"),  (60, 75))
+    bandera_img = pygame.transform.scale(pygame.image.load("bandera.png"),(50, 70))
+
+    
     jugador, velocidad = jugador_speed()
-    entidades.append(crear_camion(300,300,-1,c))
-    entidades.append(crear_tren(300,500,1,c))
-    entidades.append(crear_arbol(200,400,c))
-    xarboles=[200]
-    yarboles=[400]
+
+    # ENTIDADES (igual que antes pero con imágenes)
+    entidades.append(crear_camion(300,80,-1,random.choice(coches)))
+    entidades.append(crear_camion(10,160,1,random.choice(coches)))
+    entidades.append(crear_tren(300,320,-1, tren_img))
+    entidades.append(crear_arbol(190,235, arbol_img))
+    entidades.append(crear_arbol(478,235, arbol_img))
+    entidades.append(crear_tronco(0,400,1, tronco_img))
+    entidades.append(crear_tronco(20,455,-1, tronco_img))
+    entidades.append(crear_tronco(200,500,1, tronco_img))
+    entidades.append(crear_bandera(400,700, bandera_img))
+    entidades.append(crear_camion(10,570,-1,random.choice(coches)))
+    entidades.append(crear_camion(200,570,-1,random.choice(coches)))
+    entidades.append(crear_camion(600,570,-1,random.choice(coches)))
+    entidades.append(crear_camion(700,630,1,random.choice(coches)))
+    entidades.append(crear_camion(300,630,1,random.choice(coches)))
+    entidades.append(crear_camion(100,630,1,random.choice(coches)))
+
+    fuente_titulo = pygame.font.SysFont(None, 50)
+    seguir = True
+    tiempo = 0
+
     while not game_over:
         pygame.time.delay(150)
+        tiempo = temporizador(tiempo)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
-        screen.fill(c["GRIS"])
-        jugador.x, jugador.y,viejox,viejoy = movimiento(jugador, velocidad,xarboles,yarboles)
+                seguir = False
+
+    
+        screen.fill(c["NEGRO"])   
+
+        screen.blit(mapa_img, (0, 0))
+
+    
+        jugador.x, jugador.y, viejox, viejoy = movimiento(jugador, velocidad)
         
+        # 4) MOVER Y DIBUJAR ENTIDADES + COLISIONES
         for e in entidades:
             movimiento_entidades(e)
-            if colision(jugador,e):
-                if e['tipo']=='camion' or e['tipo']=='tren':
-                    game_over=True
-                elif e['tipo']=='arbol':
-                    jugador.x,jugador.y=viejox,viejoy
-            dibujar_entidades(screen,e)
-            
-        pygame.draw.rect(screen, c["MORADO"],jugador)
+            if colision(jugador, e):
+                if e["tipo"] == "camion" or e["tipo"] == "tren" or e["tipo"] == "agua":
+                    vict_der(screen, "GAME OVER")
+                    game_over = True
+                    muertes=muertes+1
+
+                elif e["tipo"] == "arbol":
+                    jugador.x, jugador.y = viejox, viejoy
+
+                elif e["tipo"] == "tronco":
+                    jugador.x += e["vel"]
+
+                elif e["tipo"] == "bandera":
+                    vict_der(screen, "VICTORIA")
+                    game_over = True
+            else:
+                if e["tipo"] == "tronco" and e["rect"].y <= jugador.y < (e["rect"].y + e["rect"].height):
+                    vict_der(screen, "GAME OVER")
+                    game_over = True
+                    muertes=muertes+1
+
+            if not game_over:
+                dibujar_entidades(screen, e)
+
+        
+        if not game_over:
+            pygame.draw.rect(screen, c["MORADO"], jugador)
+            etiquetat = fuente_titulo.render(str(round(tiempo, 1)), True, c["BLANCO"])
+            screen.blit(etiquetat, (730, 30))
+            etiquetat = fuente_titulo.render('Muertes: '+str(muertes), True, c["BLANCO"])
+            screen.blit(etiquetat, (10, 30))
+
         pygame.display.update()
 
     pygame.quit()
+    return seguir, tiempo,muertes
+ 
 
 def main():
-    op=menu()
-    if op==0:
-        juego()
-    
+    muertes=0
+    import ctypes
+    try:
+        ctypes.windll.user32.SetProcessDPIAware()
+    except:
+        pass  # Si no es Windows, no pasa nada
+    seguir=True
+    tiempos=[]
+    muertes=0
+    listmuertes=[]
+    while seguir:
+        op=menu()
+        if op==0:
+            seguir,t,muertes=juego(muertes)
+            tiempos.append(t)
+            listmuertes.append(muertes)
+        elif op==1:
+            estadisticas(tiempos,muertes)
+        
+        elif op==2:
+            creds()
+        
+        elif op==3:
+            seguir=False
+        
 main()
