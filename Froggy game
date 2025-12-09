@@ -8,14 +8,15 @@ import ctypes
 ctypes.windll.user32.SetProcessDPIAware()
 
 import pygame
+import random
 
 def pantalla():
     screen = pygame.display.set_mode([800, 800])
     return screen
 
 def jugador_speed():
-    jugador = pygame.Rect(20, 20, 40, 40)
-    velocidad = 40
+    jugador = pygame.Rect(400, 0, 46, 46)
+    velocidad = 48
     return jugador, velocidad
 
 def color():
@@ -215,7 +216,7 @@ def crear_tren(x,y,direc, img):
     return {
         "tipo": "tren",
         "rect": rect,
-        "vel": 60*direc,
+        "vel": 50*direc,
         "img": img
     }
 
@@ -237,13 +238,7 @@ def crear_tronco(x,y,direc, img):
         "img": img
     }
 
-def crear_agua(tronco,c):
-    return {
-        "tipo":"agua",
-        "rect":pygame.Rect(0, tronco["rect"].y, 800, 30),
-        "vel":0,
-        "color":c["AZUL"]
-    }
+
 
 def crear_bandera(x,y, img):
     rect = img.get_rect(topleft=(x,y))   # tamaño 30x40
@@ -255,11 +250,8 @@ def crear_bandera(x,y, img):
     }
 
 def dibujar_entidades(screen,e):
-    # Si la entidad tiene imagen, la dibujamos; si no, usamos color y rectángulo
-    if "img" in e:
         screen.blit(e["img"], e["rect"])
-    else:
-        pygame.draw.rect(screen, e["color"], e["rect"])
+
     
 def colision(jugador,e):
     if jugador.colliderect(e["rect"]):
@@ -284,25 +276,36 @@ def juego():
     game_over = False
     entidades = []
     c = color()
-
+    coches=[]
 
     # ==== CARGA Y ESCALADO DE IMÁGENES (nuevas medidas mejoradas) ====
     mapa_img = pygame.transform.scale(pygame.image.load("MAPA.png"), (800, 800))
-    camion_img  = pygame.transform.scale(pygame.image.load("camion.png"), (70, 70))
-    tren_img    = pygame.transform.scale(pygame.image.load("tren.png"),   (200, 60))
-    tronco_img  = pygame.transform.scale(pygame.image.load("tronco.png"), (160, 35))
-    arbol_img   = pygame.transform.scale(pygame.image.load("arbol.png"),  (60, 110))
+    coches.append(pygame.transform.scale(pygame.image.load("coche 1.png"), (70, 70)))
+    coches.append(pygame.transform.scale(pygame.image.load("coche 2.png"), (70, 70)))
+    tren_img    = pygame.transform.scale(pygame.image.load("tren.png"),   (200, 70))
+    tronco_img  = pygame.transform.scale(pygame.image.load("tronco.png"), (160, 45))
+    arbol_img   = pygame.transform.scale(pygame.image.load("arbol.png"),  (60, 75))
     bandera_img = pygame.transform.scale(pygame.image.load("bandera.png"),(50, 70))
 
+    
     jugador, velocidad = jugador_speed()
 
     # ENTIDADES (igual que antes pero con imágenes)
-    entidades.append(crear_camion(300,300,-1, camion_img))
-    entidades.append(crear_tren(300,500,-1, tren_img))
-    entidades.append(crear_arbol(200,400, arbol_img))
-    entidades.append(crear_tronco(0,100,1, tronco_img))
-    entidades.append(crear_tronco(20,130,-1, tronco_img))
+    entidades.append(crear_camion(300,80,-1,random.choice(coches)))
+    entidades.append(crear_camion(10,160,1,random.choice(coches)))
+    entidades.append(crear_tren(300,320,-1, tren_img))
+    entidades.append(crear_arbol(190,235, arbol_img))
+    entidades.append(crear_arbol(478,235, arbol_img))
+    entidades.append(crear_tronco(0,400,1, tronco_img))
+    entidades.append(crear_tronco(20,455,-1, tronco_img))
+    entidades.append(crear_tronco(200,500,1, tronco_img))
     entidades.append(crear_bandera(400,700, bandera_img))
+    entidades.append(crear_camion(10,570,-1,random.choice(coches)))
+    entidades.append(crear_camion(200,570,-1,random.choice(coches)))
+    entidades.append(crear_camion(600,570,-1,random.choice(coches)))
+    entidades.append(crear_camion(700,630,1,random.choice(coches)))
+    entidades.append(crear_camion(300,630,1,random.choice(coches)))
+    entidades.append(crear_camion(100,630,1,random.choice(coches)))
 
     fuente_titulo = pygame.font.SysFont(None, 50)
     seguir = True
